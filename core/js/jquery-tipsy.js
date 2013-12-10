@@ -124,7 +124,7 @@
     
     $.fn.tipsy = function(options) {
 
-        $.fn.tipsy.enable();
+        //$.fn.tipsy.enable();
         
         if (options === true) {
             return this.data('tipsy');
