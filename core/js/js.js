@@ -753,7 +753,9 @@ $(document).ready(function(){
 	});
 
 	var setShowPassword = function(input, label) {
-		input.showPassword().keyup();
+                if (input.length > 0) {
+	                input.showPassword().keyup();
+                }
 	};
 	setShowPassword($('#adminpass'), $('label[for=show]'));
 	setShowPassword($('#pass2'), $('label[for=personal-show]'));
