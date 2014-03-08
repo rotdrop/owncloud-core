@@ -67,10 +67,21 @@ Files={
 		return fileName;
 	},
 
-	isFileNameValid:function (name) {
-		if (name === '.') {
-			throw t('files', '\'.\' is an invalid file name.');
-		} else if (name.length === 0) {
+	/**
+	 * Checks whether the given file name is valid.
+	 * @param name file name to check
+	 * @return true if the file name is valid.
+	 * Throws a string exception with an error message if
+	 * the file name is not valid
+	 */
+	isFileNameValid: function (name, root) {
+		var trimmedName = name.trim();
+		if (trimmedName === '.'
+				|| trimmedName === '..'
+				|| (root === '/' &&  trimmedName.toLowerCase() === 'shared'))
+		{
+			throw t('files', '"{name}" is an invalid file name.', {name: name});
+		} else if (trimmedName.length === 0) {
 			throw t('files', 'File name cannot be empty.');
 		}
 
@@ -282,7 +293,7 @@ $(document).ready(function() {
 			procesSelection();
 		} else {
 			var filename=$(this).parent().parent().attr('data-file');
-			var tr=$('tr[data-file="'+filename+'"]');
+			var tr = FileList.findFileEl(filename);
 			var renaming=tr.data('renaming');
 			if (!renaming && !FileList.isLoading(filename)) {
 				FileActions.currentFile = $(this).parent();
@@ -541,10 +552,12 @@ var folderDropOptions={
 				if (result) {
 					if (result.status === 'success') {
 						//recalculate folder size
-						var oldSize = $('#fileList tr[data-file="'+target+'"]').data('size');
-						var newSize = oldSize + $('#fileList tr[data-file="'+file+'"]').data('size');
-						$('#fileList tr[data-file="'+target+'"]').data('size', newSize);
-						$('#fileList tr[data-file="'+target+'"]').find('td.filesize').text(humanFileSize(newSize));
+						var oldFile = FileList.findFileEl(target);
+						var newFile = FileList.findFileEl(file);
+						var oldSize = oldFile.data('size');
+						var newSize = oldSize + newFile.data('size');
+						oldFile.data('size', newSize);
+						oldFile.find('td.filesize').text(humanFileSize(newSize));
 
 						FileList.remove(file);
 						procesSelection();
@@ -610,11 +623,12 @@ function procesSelection() {
 		return el.type==='dir';
 	});
 	if (selectedFiles.length === 0 && selectedFolders.length === 0) {
-		$('#headerName>span.name').text(t('files','Name'));
+		$('#headerName span.name').text(t('files','Name'));
 		$('#headerSize').text(t('files','Size'));
 		$('#modified').text(t('files','Modified'));
 		$('table').removeClass('multiselect');
 		$('.selectedActions').hide();
+		$('#select_all').removeAttr('checked');
 	}
 	else {
 		$('.selectedActions').show();
@@ -717,7 +731,7 @@ Files.lazyLoadPreview = function(path, mime, ready, width, height, etag) {
 			console.warn('Files.lazyLoadPreview(): missing etag argument');
 		}
 
-		if ( $('#publicUploadButtonMock').length ) {
+		if ( $('#isPublic').length ) {
 			urlSpec.t = $('#dirToken').val();
 			previewURL = OC.Router.generate('core_ajax_public_preview', urlSpec);
 		} else {
@@ -738,7 +752,7 @@ Files.lazyLoadPreview = function(path, mime, ready, width, height, etag) {
 }
 
 function getUniqueName(name) {
-	if ($('tr[data-file="'+name+'"]').exists()) {
+	if (FileList.findFileEl(name).exists()) {
 		var parts=name.split('.');
 		var extension = "";
 		if (parts.length > 1) {
