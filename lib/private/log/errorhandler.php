@@ -14,10 +14,23 @@ class ErrorHandler {
 	/** @var LoggerInterface */
 	private static $logger;
 
-	public static function register() {
+	/**
+	 * @brief remove password in URLs
+	 * @param string $msg
+	 * @return string
+	 */
+	protected static function removePassword($msg) {
+		return preg_replace('/\/\/(.*):(.*)@/', '//xxx:xxx@', $msg);
+	}
+
+	public static function register($debug=false) {
 		$handler = new ErrorHandler();
 
-		set_error_handler(array($handler, 'onError'));
+		if ($debug) {
+			set_error_handler(array($handler, 'onAll'), E_ALL);
+		} else {
+			set_error_handler(array($handler, 'onError'));
+		}
 		register_shutdown_function(array($handler, 'onShutdown'));
 		set_exception_handler(array($handler, 'onException'));
 	}
@@ -32,14 +45,14 @@ class ErrorHandler {
 		if($error && (error_reporting() & $error['type']) && self::$logger) {
 			//ob_end_clean();
 			$msg = $error['message'] . ' (' .$error['type']. ', shutdown) at ' . $error['file'] . '#' . $error['line'];
-			self::$logger->critical($msg, array('app' => 'PHP'));
+                        self::$logger->critical(self::removePassword($msg), array('app' => 'PHP'));
 		}
 	}
 
 	// Uncaught exception handler
 	public static function onException($exception) {
 		$msg = $exception->getMessage() .  ' (' .$exception->getCode(). ') at ' . $exception->getFile() . '#' . $exception->getLine();
-		self::$logger->critical($msg, array('app' => 'PHP'));
+		self::$logger->critical(self::removePassword($msg), array('app' => 'PHP'));
 	}
 
 	//Recoverable errors handler
@@ -48,7 +61,14 @@ class ErrorHandler {
  			return;
  		}
 		$msg = $message . ' (' .$errno . ') at ' . $file . '#' . $line;
-		self::$logger->warning($msg, array('app' => 'PHP'));
-
+		self::$logger->warning(self::removePassword($msg), array('app' => 'PHP'));
+		$msg = $exception->getMessage() . ' at ' . $exception->getFile() . '#' . $exception->getLine();
+		self::$logger->critical(self::removePassword($msg), array('app' => 'PHP'));
 	}
+
+	public static function onAll($number, $message, $file, $line) {
+		$msg = $message . ' at ' . $file . '#' . $line;
+		self::$logger->debug(self::removePassword($msg), array('app' => 'PHP'));
+	}
+
 }
