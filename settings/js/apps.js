@@ -260,7 +260,7 @@ $(document).ready(function(){
 			var item = tgt.is('li') ? $(tgt) : $(tgt).parent();
 			var app = item.data('app');
 			OC.Settings.Apps.loadApp(app);
-			$('#app-navigation .selected').removeClass('selected');
+			$('#app-navigation ul li.selected').removeClass('selected');
 			item.addClass('selected');
 		}
 		return false;
@@ -286,7 +286,7 @@ $(document).ready(function(){
 		if(item) {
 			item.trigger('click');
 			item.addClass('active');
-			$('#app-navigation').animate({scrollTop: $(item).offset().top-70}, 'slow','swing');
+			$('#app-navigation ul').animate({scrollTop: $(item).offset().top-70}, 'slow','swing');
 		}
 	}
 });
