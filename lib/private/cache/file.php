@@ -1,6 +1,7 @@
 <?php
 /**
  * Copyright (c) 2012 Bart Visscher <bartv@thisnet.nl>
+ * Copyright (c) 2014 Vincent Petry <pvince81@owncloud.com>
  * This file is licensed under the Affero General Public License version 3 or
  * later.
  * See the COPYING-README file.
@@ -10,23 +11,42 @@ namespace OC\Cache;
 
 class File {
 	protected $storage;
+
+	/**
+	 * Returns the cache storage for the logged in user
+	 * @return cache storage
+	 */
 	protected function getStorage() {
 		if (isset($this->storage)) {
 			return $this->storage;
 		}
-		if(\OC_User::isLoggedIn()) {
-			\OC\Files\Filesystem::initMountPoints(\OC_User::getUser());
-			$subdir = 'cache';
-			$view = new \OC\Files\View('/' . \OC_User::getUser());
-			if(!$view->file_exists($subdir)) {
-				$view->mkdir($subdir);
-			}
-			$this->storage = new \OC\Files\View('/' . \OC_User::getUser().'/'.$subdir);
-			return $this->storage;
-		}else{
+		if(!\OC_User::isLoggedIn()) {
 			\OC_Log::write('core', 'Can\'t get cache storage, user not logged in', \OC_Log::ERROR);
 			return false;
 		}
+
+		$user = \OC_User::getUser();
+		$cacheBaseDir = \OC_Config::getValue('cache_path', '');
+		if ($cacheBaseDir === '') {
+			\OC\Files\Filesystem::initMountPoints($user);
+			$subdir = 'cache';
+			$view = new \OC\Files\View('/' . $user);
+			if(!$view->file_exists($subdir)) {
+				$view->mkdir($subdir);
+			}
+			$this->storage = new \OC\Files\View('/' . $user .'/'.$subdir);
+		} else {
+			$cacheDir = rtrim($cacheBaseDir, '/') . '/' . $user;
+			if (!file_exists($cacheDir)) {
+				mkdir($cacheDir, 0770, true);
+			}
+			if (!is_writable($cacheDir)) {
+				\OC_Log::write('core', 'Cache directory \"' . $cacheDir . '\" not writeable', \OC_Log::ERROR);
+				return false;
+			}
+			$this->storage = new \OC\Files\Storage\Local(array('datadir' => $cacheDir));
+		}
+		return $this->storage;
 	}
 
 	/**
