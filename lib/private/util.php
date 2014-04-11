@@ -529,7 +529,7 @@ class OC_Util {
 				.' cannot be listed by other users.';
 			$perms = substr(decoct(@fileperms($dataDirectory)), -3);
 			if (substr($perms, -1) != '0') {
-				OC_Helper::chmodr($dataDirectory, 0770);
+				chmod($dataDirectory, 0770);
 				clearstatcache();
 				$perms = substr(decoct(@fileperms($dataDirectory)), -3);
 				if (substr($perms, 2, 1) != '0') {
@@ -918,6 +918,11 @@ class OC_Util {
 		// in case there is no internet connection on purpose return false
 		if (self::isInternetConnectionEnabled() === false) {
 			return false;
+		}
+
+		// in case the connection is via proxy return true to avoid connecting to owncloud.org
+		if(OC_Config::getValue('proxy', '') != '') {
+			return true;
 		}
 
 		// try to connect to owncloud.org to see if http connections to the internet are possible.
