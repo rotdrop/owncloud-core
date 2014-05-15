@@ -62,8 +62,6 @@ class ErrorHandler {
  		}
 		$msg = $message . ' (' .$errno . ') at ' . $file . '#' . $line;
 		self::$logger->warning(self::removePassword($msg), array('app' => 'PHP'));
-		$msg = $exception->getMessage() . ' at ' . $exception->getFile() . '#' . $exception->getLine();
-		self::$logger->critical(self::removePassword($msg), array('app' => 'PHP'));
 	}
 
 	public static function onAll($number, $message, $file, $line) {
