@@ -1141,6 +1141,10 @@ class Util {
 		// Re-enc keyfile to (additional) sharekeys
 		$multiEncKey = Crypt::multiKeyEncrypt($plainKeyfile, $userPubKeys);
 
+		if ($multiEncKey === false) {
+			return false;
+		}
+
 		// Save the recrypted key to it's owner's keyfiles directory
 		// Save new sharekeys to all necessary user directory
 		if (
@@ -1769,10 +1773,11 @@ class Util {
 	 * @return boolean
 	 */
 	public function isSystemWideMountPoint($path) {
+		$normalizedPath = ltrim($path, '/');
 		if (\OCP\App::isEnabled("files_external")) {
 			$mount = \OC_Mount_Config::getSystemMountPoints();
 			foreach ($mount as $mountPoint => $data) {
-				if ($mountPoint == substr($path, 1, strlen($mountPoint))) {
+				if ($mountPoint == substr($normalizedPath, 0, strlen($mountPoint))) {
 					return true;
 				}
 			}
