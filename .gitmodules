@@ -1,3 +1,6 @@
 [submodule "3rdparty"]
 	path = 3rdparty
 	url = git://github.com/owncloud/3rdparty.git
+[submodule "apps/files_tree"]
+	path = apps/files_tree
+	url = https://github.com/EELV-fr/files_tree.git
