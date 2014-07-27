@@ -1044,7 +1044,8 @@ function initCore() {
 	});
 
 	var setShowPassword = function(input, label) {
-		input.showPassword().keyup();
+		if (input.hasOwnProperty('showPassword'))
+		        input.showPassword().keyup();
 	};
 	setShowPassword($('#adminpass'), $('label[for=show]'));
 	setShowPassword($('#pass2'), $('label[for=personal-show]'));
