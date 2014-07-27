@@ -6,4 +6,37 @@
 	url = https://github.com/tanghus/journal.git
 [submodule "apps/tal"]
 	path = apps/tal
-	url = git://github.com/tanghus/tal.git
+	url = https://github.com/rotdrop/tal.git
+[submodule "apps/bookmarks"]
+	path = apps/bookmarks
+	url = https://github.com/owncloud/bookmarks.git
+[submodule "apps/activity"]
+	path = apps/activity
+	url = https://github.com/owncloud/activity.git
+[submodule "apps/news"]
+	path = apps/news
+	url = https://github.com/owncloud/news.git
+[submodule "apps/gallery"]
+	path = apps/gallery
+	url = https://github.com/owncloud/gallery.git
+[submodule "apps/templateeditor"]
+	path = apps/templateeditor
+	url = https://github.com/owncloud/templateeditor.git
+[submodule "apps/updater"]
+	path = apps/updater
+	url = https://github.com/owncloud/updater.git
+[submodule "apps/files_pdfviewer"]
+	path = apps/files_pdfviewer
+	url = https://github.com/owncloud/files_pdfviewer.git
+[submodule "apps/files_texteditor"]
+	path = apps/files_texteditor
+	url = https://github.com/owncloud/files_texteditor
+[submodule "apps/search_lucene"]
+	path = apps/search_lucene
+	url = https://github.com/owncloud/search_lucene
+[submodule "apps/tasks_enhanced"]
+	path = apps/tasks_enhanced
+	url = https://github.com/raimund-schluessler/tasks.git
+[submodule "apps/music"]
+	path = apps/music
+	url = https://github.com/owncloud/music.git
