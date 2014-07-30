@@ -42,32 +42,34 @@ class ErrorHandler {
 	//Fatal errors handler
 	public static function onShutdown() {
 		$error = error_get_last();
-		if($error && self::$logger) {
-			//ob_end_clean();
-			$msg = $error['message'] . ' at ' . $error['file'] . '#' . $error['line'];
+                if($error && (error_reporting() & $error['type']) && self::$logger) {
+                        //ob_end_clean();
+                        $msg = $error['message'] . ' (' .$error['type']. ', shutdown) at ' . $error['file'] . '#' . $error['line'];
 			self::$logger->critical(self::removePassword($msg), array('app' => 'PHP'));
 		}
 	}
 
 	// Uncaught exception handler
 	public static function onException($exception) {
-		$msg = $exception->getMessage() . ' at ' . $exception->getFile() . '#' . $exception->getLine();
+                $msg = $exception->getMessage() .  ' (' .$exception->getCode(). ') at ' . $exception->getFile() . '#' . $exception->getLine();
 		self::$logger->critical(self::removePassword($msg), array('app' => 'PHP'));
 	}
 
 	//Recoverable errors handler
-	public static function onError($number, $message, $file, $line) {
-		if (error_reporting() === 0) {
-			return;
-		}
-		$msg = $message . ' at ' . $file . '#' . $line;
+	public static function onError($errno, $message, $file, $line) {
+                if (!(error_reporting() & $errno)) {
+                        return;
+                }
+                $msg = $message . ' (' .$errno . ') at ' . $file . '#' . $line;
 		self::$logger->error(self::removePassword($msg), array('app' => 'PHP'));
-
 	}
 
 	//Recoverable handler which catch all errors, warnings and notices
-	public static function onAll($number, $message, $file, $line) {
-		$msg = $message . ' at ' . $file . '#' . $line;
+	public static function onAll($errno, $message, $file, $line) {
+                if (!(error_reporting() & $errno)) {
+                        return;
+                }
+                $msg = $message . ' (' .$errno . ') at ' . $file . '#' . $line;
 		self::$logger->debug(self::removePassword($msg), array('app' => 'PHP'));
 
 	}
