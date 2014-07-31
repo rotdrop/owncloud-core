@@ -34,9 +34,6 @@
 [submodule "apps/search_lucene"]
 	path = apps/search_lucene
 	url = https://github.com/owncloud/search_lucene
-[submodule "apps/tasks_enhanced"]
-	path = apps/tasks_enhanced
-	url = https://github.com/raimund-schluessler/tasks.git
 [submodule "apps/music"]
 	path = apps/music
 	url = https://github.com/owncloud/music.git
