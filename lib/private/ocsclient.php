@@ -168,7 +168,9 @@ class OC_OCSClient{
 		$loadEntities = libxml_disable_entity_loader(true);
 		$data = simplexml_load_string($xml);
 		libxml_disable_entity_loader($loadEntities);
-
+                if (isset($data->meta->status) && $data->meta->status == 'failed') {
+                  return null;
+                }
 		$tmp=$data->data->content;
 		$app=array();
 		$app['id']=$tmp->id;
