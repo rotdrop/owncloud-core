@@ -37,3 +37,6 @@
 [submodule "apps/music"]
 	path = apps/music
 	url = https://github.com/owncloud/music.git
+[submodule "apps/tasks"]
+	path = apps/tasks
+	url = https://github.com/owncloud/tasks.git
