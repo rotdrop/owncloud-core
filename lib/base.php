@@ -85,6 +85,36 @@ class OC {
 	 */
 	public static $server = null;
 
+        private static function redirectRewriteServer()
+        {
+          // Ok, sorry, but otherwise we would have to go without the config-value
+          OC::$SERVERROOT=str_replace("\\", '/', substr(__FILE__, 0, -13));
+          $tweak = OC_Config::getValue('sslproxytweak', false);
+          switch ($tweak) {
+          case '_SERVER_REQUEST_REWRITE_HTTP_HOST':
+            /* Rewrite REQUEST_URI, SCRIPT_NAME and PHP_SELF in
+             * $_SERVER by pre-pending HTTP_HOST.
+             */
+            if (isset($_SERVER['HTTP_HOST']) &&
+                isset($_SERVER['HTTP_X_FORWARDED_SERVER'])) {
+              $victims = array('REQUEST_URI','SCRIPT_NAME','PHP_SELF');
+              foreach ($victims as $key) {
+                if (isset($_SERVER[$key])){ 
+                  $_SERVER[$key] = '/'.$_SERVER['HTTP_HOST'].$_SERVER[$key];
+                }
+              }
+              if (!isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+                $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+              }              
+            }
+            break;
+            // Add other tweaks here if necessary
+          case false:
+          default:
+            break;
+          }
+        }
+
 	public static function initPaths() {
 		// calculate the root directories
 		OC::$SERVERROOT = str_replace("\\", '/', substr(__DIR__, 0, -4));
@@ -474,6 +504,7 @@ class OC {
 
 		self::handleAuthHeaders();
 
+                self::redirectRewriteServer();
 		self::initPaths();
 		if (OC_Config::getValue('instanceid', false)) {
 			// \OC\Memcache\Cache has a hidden dependency on
