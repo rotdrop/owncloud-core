@@ -40,3 +40,7 @@
 [submodule "apps/tasks"]
 	path = apps/tasks
 	url = https://github.com/owncloud/tasks.git
+[submodule "cafevdbtheme"]
+	path = themes/cafevdb
+	url = https://claus@fritz.claus-justus-heine.info:8888/git/cafevoctheme.git
+	branch = owncloud7-app
