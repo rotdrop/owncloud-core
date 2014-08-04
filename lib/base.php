@@ -134,6 +134,8 @@ class OC {
 		}
 		OC_Config::$object = new \OC\Config(self::$configDir);
 
+                self::redirectRewriteServer();
+
 		OC::$SUBURI = str_replace("\\", "/", substr(realpath($_SERVER["SCRIPT_FILENAME"]), strlen(OC::$SERVERROOT)));
 		$scriptName = OC_Request::scriptName();
 		if (substr($scriptName, -1) == '/') {
@@ -504,7 +506,6 @@ class OC {
 
 		self::handleAuthHeaders();
 
-                self::redirectRewriteServer();
 		self::initPaths();
 		if (OC_Config::getValue('instanceid', false)) {
 			// \OC\Memcache\Cache has a hidden dependency on
