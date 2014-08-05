@@ -107,6 +107,7 @@ class OC {
                 $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
               }              
             }
+	    $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
             break;
             // Add other tweaks here if necessary
           case false:
