@@ -172,6 +172,7 @@ class OC_App {
 		if (!$forceRefresh && !empty(self::$enabledAppsCache)) {
 			return self::$enabledAppsCache;
 		}
+		$apps = array();
 		$appConfig = \OC::$server->getAppConfig();
 		$appStatus = $appConfig->getValues(false, 'enabled');
 		$user = \OC_User::getUser();
@@ -832,7 +833,8 @@ class OC_App {
 			foreach ($appList as $app) {
 				foreach ($remoteApps AS $key => $remote) {
 					if ($app['name'] === $remote['name'] ||
-						$app['ocsid'] ===  $remote['id']) {
+						(isset($app['ocsid']) &&
+						$app['ocsid'] ===  $remote['id'])) {
 						unset($remoteApps[$key]);
 					}
 				}
