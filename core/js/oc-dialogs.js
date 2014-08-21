@@ -37,14 +37,15 @@ var OCdialogs = {
 	* @param callback which will be triggered when user presses OK
 	* @param modal make the dialog modal
 	*/
-	alert:function(text, title, callback, modal) {
+	alert:function(text, title, callback, modal, html) {
 		this.message(
 			text,
 			title,
 			'alert',
 			OCdialogs.OK_BUTTON,
 			callback,
-			modal
+			modal,
+                        html
 		);
 	},
 	/**
@@ -234,16 +235,20 @@ var OCdialogs = {
 	 * Displays raw dialog
 	 * You better use a wrapper instead ...
 	*/
-	message:function(content, title, dialogType, buttons, callback, modal) {
+        message:function(content, title, dialogType, buttons, callback, modal, html) {
 		return $.when(this._getMessageTemplate()).then(function($tmpl) {
 			var dialogName = 'oc-dialog-' + OCdialogs.dialogsCounter + '-content';
 			var dialogId = '#' + dialogName;
+                        if (html === undefined) {
+                                html = false;
+                        }
+                        var options = html ? { escapeFunction: null } : {};
 			var $dlg = $tmpl.octemplate({
 				dialog_name: dialogName,
 				title: title,
 				message: content,
 				type: dialogType
-			});
+			}, options);
 			if (modal === undefined) {
 				modal = false;
 			}
