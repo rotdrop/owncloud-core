@@ -112,6 +112,15 @@ class Config {
 		return true;
 	}
 
+        public static function deleteAppKey( $key ) {
+		try {
+			\OC_Appconfig::deleteKey( $key );
+		} catch (\Exception $e) {
+			return false;
+		}
+		return true;
+        }
+
 	/**
 	 * Gets the preference
 	 * @param string $user user
