@@ -7,7 +7,7 @@
 
 /* fix height of select boxes for OS X */
 select {
-	height: 32px;
+//	height: 32px;
 }
 
 /* reset typeface for IE8 because OpenSans renders too small */
