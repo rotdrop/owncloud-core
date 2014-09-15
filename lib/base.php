@@ -353,7 +353,8 @@ class OC {
 		// TODO: read from core/js/core.json
 		OC_Util::addScript("jquery-1.10.0.min");
 		OC_Util::addScript("jquery-migrate-1.2.1.min");
-		OC_Util::addScript("jquery-ui-1.10.0.custom");
+		//OC_Util::addScript("jquery-ui-1.10.0.custom");
+		OC_Util::addScript("jquery-ui-1.11.1.custom");
 		OC_Util::addScript("jquery-showpassword");
 		OC_Util::addScript("placeholders");
 		OC_Util::addScript("jquery-tipsy");
@@ -387,7 +388,8 @@ class OC {
 		OC_Util::addStyle("apps");
 		OC_Util::addStyle("fixes");
 		OC_Util::addStyle("multiselect");
-		OC_Util::addStyle("jquery-ui-1.10.0.custom");
+		//OC_Util::addStyle("jquery-ui-1.10.0.custom");
+		OC_Util::addStyle("jquery-ui-1.11.1.custom");
 		OC_Util::addStyle("jquery-tipsy");
 		OC_Util::addStyle("jquery.ocdialog");
 	}
