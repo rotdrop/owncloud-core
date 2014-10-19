@@ -55,8 +55,8 @@ var OCdialogs = {
 	* @param callback which will be triggered when user presses OK
 	* @param modal make the dialog modal
 	*/
-	info:function(text, title, callback, modal) {
-		this.message(text, title, 'info', OCdialogs.OK_BUTTON, callback, modal);
+	info:function(text, title, callback, modal, html) {
+		this.message(text, title, 'info', OCdialogs.OK_BUTTON, callback, modal, html);
 	},
 	/**
 	* displays confirmation dialog
@@ -254,6 +254,7 @@ var OCdialogs = {
 			}
 			$('body').append($dlg);
 			var buttonlist = [];
+			var closeCB = function() {};
 			switch (buttons) {
 			case OCdialogs.YES_NO_BUTTONS:
 				buttonlist = [{
@@ -275,16 +276,20 @@ var OCdialogs = {
 					},
 					defaultButton: true
 				}];
+                                closeButton = false;
 				break;
 			case OCdialogs.OK_BUTTON:
 				var functionToCall = function() {
 					$(dialogId).ocdialog('close');
+				};
+                                closeCB = function() {
 					if(callback !== undefined) {
 						callback();
+                                                callback = undefined;
 					}
-				};
+                                };
 				buttonlist[0] = {
-					text: t('core', 'Ok'),
+				        text: t('core', 'Ok'),
 					click: functionToCall,
 					defaultButton: true
 				};
@@ -293,6 +298,7 @@ var OCdialogs = {
 
 			$(dialogId).ocdialog({
 				closeOnEscape: true,
+                                close: closeCB,
 				modal: modal,
 				buttons: buttonlist
 			});

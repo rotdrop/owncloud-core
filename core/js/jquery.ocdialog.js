@@ -3,7 +3,7 @@
 		options: {
 			width: 'auto',
 			height: 'auto',
-			closeButton: true,
+		        closeButton: true,
 			closeOnEscape: true,
 			modal: false
 		},
