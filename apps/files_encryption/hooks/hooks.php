@@ -205,13 +205,12 @@ class Hooks {
 		if (Crypt::mode() === 'server') {
 
 			$view = new \OC\Files\View('/');
+			$session = new \OCA\Encryption\Session($view);
 
-			if ($params['uid'] === \OCP\User::getUser()) {
+			// Get existing decrypted private key
+			$privateKey = $session->getPrivateKey();
 
-				$session = new \OCA\Encryption\Session($view);
-
-				// Get existing decrypted private key
-				$privateKey = $session->getPrivateKey();
+			if ($params['uid'] === \OCP\User::getUser() && $privateKey) {
 
 				// Encrypt private key with new user pwd as passphrase
 				$encryptedPrivateKey = Crypt::symmetricEncryptFileContent($privateKey, $params['password'], Helper::getCipher());
@@ -241,6 +240,9 @@ class Hooks {
 				if (($util->recoveryEnabledForUser() && $recoveryPassword)
 						|| !$util->userKeysExists()
 						|| !$view->file_exists($user . '/files')) {
+
+					// backup old keys
+					$util->backupAllKeys('recovery');
 
 					$newUserPassword = $params['password'];
 
@@ -498,6 +500,7 @@ class Hooks {
 			unset(self::$renamedFiles[$params['oldpath']]);
 		} else {
 			\OCP\Util::writeLog('Encryption library', "can't get path and owner from the file before it was renamed", \OCP\Util::DEBUG);
+			\OC_FileProxy::$enabled = $proxyStatus;
 			return false;
 		}
 
@@ -534,7 +537,13 @@ class Hooks {
 			$newKeyfilePath .= '.key';
 
 			// handle share-keys
-			$matches = Helper::findShareKeys($oldShareKeyPath, $view);
+			$matches = Helper::findShareKeys($pathOld, $oldShareKeyPath, $view);
+			if (count($matches) === 0) {
+				\OC_Log::write(
+					'Encryption library', 'No share keys found for "' . $pathOld . '"',
+					\OC_Log::WARN
+				);
+			}
 			foreach ($matches as $src) {
 				$dst = \OC\Files\Filesystem::normalizePath(str_replace($pathOld, $pathNew, $src));
 				$view->$operation($src, $dst);

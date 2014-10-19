@@ -163,7 +163,7 @@ table.grid td.date{
 }
 
 /* ADMIN */
-span.securitywarning, span.connectionwarning {
+span.securitywarning, span.connectionwarning, .setupwarning {
 	color:#C33;
 	font-weight:bold;
 }
@@ -176,12 +176,12 @@ span.securitywarning, span.connectionwarning {
 	padding-left: 56px;
 }
 
-#mail_settings p label:first-child {
+.mail_settings p label:first-child {
 	display: inline-block;
 	width: 300px;
 	text-align: right;
 }
-#mail_settings p select:nth-child(2) {
+.mail_settings p select:nth-child(2) {
 	width: 143px;
 }
 #mail_smtpport {
@@ -253,4 +253,16 @@ doesnotexist:-o-prefocus, .strengthify-wrapper {
 	padding: 0;
 	border: 0;
 	overflow: auto;
+}
+
+#postsetupchecks .loading {
+	height: 50px;
+}
+
+#postsetupchecks.section .loading {
+	background-position: left center;
+}
+
+#postsetupchecks .hint, #postsetupchecks .setupwarning {
+	margin-top: 15px;
 }

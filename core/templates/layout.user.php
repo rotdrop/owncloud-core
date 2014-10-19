@@ -35,7 +35,6 @@
 			?>
 		<?php endforeach; ?>
 	</head>
-	<?php flush(); ?>
 	<body id="<?php p($_['bodyid']);?>">
 	<noscript><div id="nojavascript"><div><?php print_unescaped($l->t('This application requires JavaScript for correct operation. Please <a href="http://enable-javascript.com/" target="_blank">enable JavaScript</a> and reload the page.')); ?></div></div></noscript>
 	<div id="notification-container">
@@ -50,7 +49,13 @@
 			</a>
 			<a href="#" class="menutoggle">
 				<div class="header-appname">
-					<?php p(!empty($_['application'])?$_['application']: $l->t('Apps')); ?>
+					<?php
+						if(OC_Util::getEditionString() === '') {
+							p(!empty($_['application'])?$_['application']: $l->t('Apps'));
+						} else {
+							p($theme->getName());
+						}
+					?>
 				</div>
 				<div class="icon-caret svg"></div>
 			</a>

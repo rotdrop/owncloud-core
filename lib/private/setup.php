@@ -1,7 +1,6 @@
 <?php
 
-class DatabaseSetupException extends \OC\HintException
-{
+class DatabaseSetupException extends \OC\HintException {
 }
 
 class OC_Setup {
@@ -38,18 +37,28 @@ class OC_Setup {
 			$dbtype = 'sqlite';
 		}
 
+		$username = htmlspecialchars_decode($options['adminlogin']);
+		$password = htmlspecialchars_decode($options['adminpass']);
+		$datadir = htmlspecialchars_decode($options['directory']);
+
 		$class = self::$dbSetupClasses[$dbtype];
+		/** @var \OC\Setup\AbstractDatabase $dbSetup */
 		$dbSetup = new $class(self::getTrans(), 'db_structure.xml');
 		$error = array_merge($error, $dbSetup->validate($options));
+
+		// validate the data directory
+		if (
+			(!is_dir($datadir) and !mkdir($datadir)) or
+			!is_writable($datadir)
+		) {
+			$error[] = $l->t("Can't create or write into the data directory %s", array($datadir));
+		}
 
 		if(count($error) != 0) {
 			return $error;
 		}
 
 		//no errors, good
-		$username = htmlspecialchars_decode($options['adminlogin']);
-		$password = htmlspecialchars_decode($options['adminpass']);
-		$datadir = htmlspecialchars_decode($options['directory']);
 		if(    isset($options['trusted_domains'])
 		    && is_array($options['trusted_domains'])) {
 			$trustedDomains = $options['trusted_domains'];
@@ -73,7 +82,7 @@ class OC_Setup {
 		//write the config file
 		OC_Config::setValue('trusted_domains', $trustedDomains);
 		OC_Config::setValue('datadirectory', $datadir);
-		OC_Config::setValue('overwritewebroot', OC::$WEBROOT);
+		OC_Config::setValue('overwrite.cli.url', \OC_Request::serverProtocol() . '://' . \OC_Request::serverHost() . OC::$WEBROOT);
 		OC_Config::setValue('dbtype', $dbtype);
 		OC_Config::setValue('version', implode('.', OC_Util::getVersion()));
 		try {
@@ -156,24 +165,5 @@ class OC_Setup {
 		$content.= "IndexIgnore *\n";
 		file_put_contents(OC_Config::getValue('datadirectory', OC::$SERVERROOT.'/data').'/.htaccess', $content);
 		file_put_contents(OC_Config::getValue('datadirectory', OC::$SERVERROOT.'/data').'/index.html', '');
-	}
-
-	/**
-	 * Post installation checks
-	 */
-	public static function postSetupCheck($params) {
-		// setup was successful -> webdav testing now
-		$l = self::getTrans();
-		if (OC_Util::isWebDAVWorking()) {
-			header("Location: ".OC::$WEBROOT.'/');
-		} else {
-
-			$error = $l->t('Your web server is not yet properly setup to allow files synchronization because the WebDAV interface seems to be broken.');
-			$hint = $l->t('Please double check the <a href=\'%s\'>installation guides</a>.',
-				\OC_Helper::linkToDocs('admin-install'));
-
-			OC_Template::printErrorPage($error, $hint);
-			exit();
-		}
 	}
 }

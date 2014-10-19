@@ -232,7 +232,11 @@ class OC_User {
 	 */
 	public static function login($uid, $password) {
 		session_regenerate_id(true);
-		return self::getUserSession()->login($uid, $password);
+		$result = self::getUserSession()->login($uid, $password);
+		if ($result) {
+			OC_Util::setupFS($uid);
+		}
+		return $result;
 	}
 
 	/**
@@ -331,15 +335,19 @@ class OC_User {
 	}
 
 	/**
-	 * Check if the user is logged in
+	 * Check if the user is logged in, considers also the HTTP basic credentials
 	 * @return bool
-	 *
-	 * Checks if the user is logged in
 	 */
 	public static function isLoggedIn() {
 		if (\OC::$session->get('user_id') !== null && self::$incognitoMode === false) {
 			return self::userExists(\OC::$session->get('user_id'));
 		}
+
+		// Check whether the user has authenticated using Basic Authentication
+		if (isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW'])) {
+			return \OC_User::login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+		}
+
 		return false;
 	}
 

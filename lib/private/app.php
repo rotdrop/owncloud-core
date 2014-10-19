@@ -92,8 +92,25 @@ class OC_App {
 			if ($checkUpgrade and self::shouldUpgrade($app)) {
 				throw new \OC\NeedsUpdateException();
 			}
-			require_once $app . '/appinfo/app.php';
+			self::requireAppFile($app);
+			if (self::isType($app, array('authentication'))) {
+				// since authentication apps affect the "is app enabled for group" check,
+				// the enabled apps cache needs to be cleared to make sure that the
+				// next time getEnableApps() is called it will also include apps that were
+				// enabled for groups
+				self::$enabledAppsCache = array();
+			}
 		}
+	}
+
+	/**
+	 * Load app.php from the given app
+	 *
+	 * @param string $app app name
+	 */
+	private static function requireAppFile($app) {
+		// encapsulated here to avoid variable scope conflicts
+		require_once $app . '/appinfo/app.php';
 	}
 
 	/**
@@ -659,7 +676,15 @@ class OC_App {
 				$data[$child->getName()] = substr($xml, 13, -14); //script <description> tags
 			} elseif ($child->getName() == 'documentation') {
 				foreach ($child as $subChild) {
-					$data["documentation"][$subChild->getName()] = (string)$subChild;
+					$url = (string) $subChild;
+
+					// If it is not an absolute URL we assume it is a key
+					// i.e. admin-ldap will get converted to go.php?to=admin-ldap
+					if(!\OC::$server->getHTTPHelper()->isHTTPURL($url)) {
+						$url = OC_Helper::linkToDocs($url);
+					}
+
+					$data["documentation"][$subChild->getName()] = $url;
 				}
 			} else {
 				$data[$child->getName()] = (string)$child;
@@ -1094,13 +1119,17 @@ class OC_App {
 			return $versions; // when function is used besides in checkUpgrade
 		}
 		$versions = array();
-		$query = OC_DB::prepare('SELECT `appid`, `configvalue` FROM `*PREFIX*appconfig`'
-			. ' WHERE `configkey` = \'installed_version\'');
-		$result = $query->execute();
-		while ($row = $result->fetchRow()) {
-			$versions[$row['appid']] = $row['configvalue'];
+		try {
+			$query = OC_DB::prepare('SELECT `appid`, `configvalue` FROM `*PREFIX*appconfig`'
+				. ' WHERE `configkey` = \'installed_version\'');
+			$result = $query->execute();
+			while ($row = $result->fetchRow()) {
+				$versions[$row['appid']] = $row['configvalue'];
+			}
+			return $versions;
+		} catch (\Exception $e) {
+			return array();
 		}
-		return $versions;
 	}
 
 

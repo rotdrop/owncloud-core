@@ -551,7 +551,7 @@ class OC {
 		self::checkSSL();
 		OC_Response::addSecurityHeaders();
 
-		$errors = OC_Util::checkServer();
+		$errors = OC_Util::checkServer(\OC::$server->getConfig());
 		if (count($errors) > 0) {
 			if (self::$CLI) {
 				foreach ($errors as $error) {
@@ -607,10 +607,18 @@ class OC {
 		) {
 			header('HTTP/1.1 400 Bad Request');
 			header('Status: 400 Bad Request');
+
+			$domain = $_SERVER['SERVER_NAME'];
+			// Append port to domain in case it is not
+			if($_SERVER['SERVER_PORT'] !== '80' && $_SERVER['SERVER_PORT'] !== '443') {
+				$domain .= ':'.$_SERVER['SERVER_PORT'];
+			}
+
 			$tmpl = new OCP\Template('core', 'untrustedDomain', 'guest');
-			$tmpl->assign('domain', $_SERVER['SERVER_NAME']);
+			$tmpl->assign('domain', $domain);
 			$tmpl->printPage();
-			return;
+
+			exit();
 		}
 	}
 
@@ -719,15 +727,6 @@ class OC {
 			self::checkUpgrade();
 		}
 
-		if (!OC_User::isLoggedIn()) {
-			// Test it the user is already authenticated using Apaches AuthType Basic... very usable in combination with LDAP
-			if (!OC_Config::getValue('maintenance', false) && !self::checkUpgrade(false)) {
-				OC_App::loadApps(array('authentication'));
-			}
-			OC::tryBasicAuthLogin();
-		}
-
-
 		if (!self::$CLI and (!isset($_GET["logout"]) or ($_GET["logout"] !== 'true'))) {
 			try {
 				if (!OC_Config::getValue('maintenance', false) && !\OCP\Util::needUpgrade()) {
@@ -736,6 +735,7 @@ class OC {
 					OC_App::loadApps();
 				}
 				self::checkSingleUserMode();
+				OC_Util::setupFS();
 				OC::$server->getRouter()->match(OC_Request::getRawPathInfo());
 				return;
 			} catch (Symfony\Component\Routing\Exception\ResourceNotFoundException $e) {
@@ -791,19 +791,11 @@ class OC {
 		if (OC_User::isLoggedIn()) {
 			OC_App::loadApps();
 			OC_User::setupBackends();
+			OC_Util::setupFS();
 			if (isset($_GET["logout"]) and ($_GET["logout"])) {
 				OC_JSON::callCheck();
 				if (isset($_COOKIE['oc_token'])) {
 					OC_Preferences::deleteKey(OC_User::getUser(), 'login_token', $_COOKIE['oc_token']);
-				}
-				if (isset($_SERVER['PHP_AUTH_USER'])) {
-					if (isset($_COOKIE['oc_ignore_php_auth_user'])) {
-						// Ignore HTTP Authentication for 5 more mintues.
-						setcookie('oc_ignore_php_auth_user', $_SERVER['PHP_AUTH_USER'], time() + 300, OC::$WEBROOT.(empty(OC::$WEBROOT) ? '/' : ''));
-					} elseif ($_SERVER['PHP_AUTH_USER'] === self::$session->get('loginname')) {
-						// Ignore HTTP Authentication to allow a different user to log in.
-						setcookie('oc_ignore_php_auth_user', $_SERVER['PHP_AUTH_USER'], 0, OC::$WEBROOT.(empty(OC::$WEBROOT) ? '/' : ''));
-					}
 				}
 				OC_User::logout();
 				// redirect to webroot and add slash if webroot is empty
@@ -994,25 +986,6 @@ class OC {
 		return true;
 	}
 
-	/**
-	 * Try to login a user using HTTP authentication.
-	 * @return bool
-	 */
-	protected static function tryBasicAuthLogin() {
-		if (!isset($_SERVER["PHP_AUTH_USER"])
-			|| !isset($_SERVER["PHP_AUTH_PW"])
-			|| (isset($_COOKIE['oc_ignore_php_auth_user']) && $_COOKIE['oc_ignore_php_auth_user'] === $_SERVER['PHP_AUTH_USER'])
-		) {
-			return false;
-		}
-
-		if (OC_User::login($_SERVER["PHP_AUTH_USER"], $_SERVER["PHP_AUTH_PW"])) {
-			//OC_Log::write('core',"Logged in with HTTP Authentication", OC_Log::DEBUG);
-			OC_User::unsetMagicInCookie();
-			$_SERVER['HTTP_REQUESTTOKEN'] = OC_Util::callRegister();
-		}
-		return true;
-	}
 
 }
 
