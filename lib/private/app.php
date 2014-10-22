@@ -615,6 +615,18 @@ class OC_App {
 		}
 	}
 
+        private static function xmlData($xml)
+        {
+                if ($xml->count() > 0) {
+                        $data = array();
+                        foreach ($xml->children as $child) {
+                                $data[$child->getName()] = self::xmlData($child);
+                        }
+                } else {
+                        $data = (string)$xml;
+                }
+                return $data;
+        }
 
 	/**
 	 * Read all app metadata from the info.xml file
@@ -687,7 +699,12 @@ class OC_App {
 					$data["documentation"][$subChild->getName()] = $url;
 				}
 			} else {
-				$data[$child->getName()] = (string)$child;
+                                //                     $data[$child->getName()] = self::xmlData($child);
+                                if ($child->count() > 0) {
+                                        $data[$child->getName()] = json_decode(json_encode($child), true);
+                                } else {
+                                        $data[$child->getName()] = (string)$child;
+                                }
 			}
 		}
 		self::$appInfo[$appId] = $data;
