@@ -65,8 +65,10 @@ class Test_Encryption_Share extends \PHPUnit_Framework_TestCase {
 
 		// clear share hooks
 		\OC_Hook::clear('OCP\\Share');
+
+		// register share hooks
 		\OC::registerShareHooks();
-		\OCP\Util::connectHook('OC_Filesystem', 'setup', '\OC\Files\Storage\Shared', 'setup');
+		\OCA\Files_Sharing\Helper::registerHooks();
 
 		// Sharing related hooks
 		\OCA\Encryption\Helper::registerShareHooks();
@@ -76,6 +78,7 @@ class Test_Encryption_Share extends \PHPUnit_Framework_TestCase {
 
 		// clear and register hooks
 		\OC_FileProxy::clearProxies();
+		\OC_FileProxy::register(new OCA\Files\Share\Proxy());
 		\OC_FileProxy::register(new OCA\Encryption\Proxy());
 
 		// create users
@@ -105,6 +108,9 @@ class Test_Encryption_Share extends \PHPUnit_Framework_TestCase {
 
 		// we don't want to tests with app files_trashbin enabled
 		\OC_App::disable('files_trashbin');
+
+		// login as first user
+		\Test_Encryption_Util::loginHelper(\Test_Encryption_Share::TEST_ENCRYPTION_SHARE_USER1);
 	}
 
 	function tearDown() {
@@ -1075,8 +1081,19 @@ class Test_Encryption_Share extends \PHPUnit_Framework_TestCase {
 		\OC\Files\Filesystem::unlink('/newfolder');
 	}
 
-	function testMoveFileToFolder() {
+	function usersProvider() {
+		return array(
+			// test as owner
+			array(\Test_Encryption_Share::TEST_ENCRYPTION_SHARE_USER1),
+			// test as share receiver
+			array(\Test_Encryption_Share::TEST_ENCRYPTION_SHARE_USER2),
+		);
+	}
 
+	/**
+	 * @dataProvider usersProvider
+	 */
+	function testMoveFileToFolder($userId) {
 		$view = new \OC\Files\View('/' . \Test_Encryption_Share::TEST_ENCRYPTION_SHARE_USER1);
 
 		$filename = '/tmp-' . uniqid();
@@ -1109,8 +1126,10 @@ class Test_Encryption_Share extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue($view->file_exists('files_encryption/share-keys' . $folder . '/' . $filename . '.' . \Test_Encryption_Share::TEST_ENCRYPTION_SHARE_USER1 . '.shareKey'));
 		$this->assertTrue($view->file_exists('files_encryption/share-keys' . $folder . '/' . $filename . '.' . \Test_Encryption_Share::TEST_ENCRYPTION_SHARE_USER2 . '.shareKey'));
 
-		// move the file into the subfolder
+		// move the file into the subfolder as the test user
+		\Test_Encryption_Util::loginHelper($userId);
 		\OC\Files\Filesystem::rename($folder . $filename, $subFolder . $filename);
+		\Test_Encryption_Util::loginHelper(\Test_Encryption_Share::TEST_ENCRYPTION_SHARE_USER1);
 
 		// Get file decrypted contents
 		$newDecrypt = \OC\Files\Filesystem::file_get_contents($subFolder . $filename);
