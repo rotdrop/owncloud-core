@@ -120,6 +120,14 @@ $CONFIG = array(
 'dbtableprefix' => '',
 
 /**
+ * Additional driver options for the database connection, eg. to enable SSL
+ * encryption in MySQL.
+ */
+'dbdriveroptions' => array(
+	PDO::MYSQL_ATTR_SSL_CA => '/file/path/to/ca_cert.pem',
+),
+
+/**
  * Indicates whether the ownCloud instance was installed successfully; ``true``
  * indicates a successful installation, and ``false`` indicates an unsuccessful
  * installation.
@@ -343,9 +351,10 @@ $CONFIG = array(
 'overwritecondaddr' => '',
 
 /**
- * Use this configuration parameter to specify the base url for any urls which are
- * generated within ownCloud using any kind of command line tools (cron or occ).
- * The value should contain the full base URL: ``https://www.example.com/owncloud``
+ * Use this configuration parameter to specify the base url for any urls which
+ * are generated within ownCloud using any kind of command line tools (cron or
+ * occ). The value should contain the full base URL:
+ * ``https://www.example.com/owncloud``
  */
 'overwrite.cli.url' => '',
 
@@ -368,8 +377,8 @@ $CONFIG = array(
  */
 
 /**
- * When the trash bin app is enabled (default), this is the number of days a file
- * will be kept in the trash bin. Default is 30 days.
+ * When the trash bin app is enabled (default), this is the number of days a
+ * file will be kept in the trash bin. Default is 30 days.
  */
 'trashbin_retention_obligation' => 30,
 
