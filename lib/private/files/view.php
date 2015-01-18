@@ -113,6 +113,19 @@ class View {
 	}
 
 	/**
+	 * get the mountpoint of the storage object for a path
+	 * ( note: because a storage is not always mounted inside the fakeroot, the
+	 * returned mountpoint is relative to the absolute root of the filesystem
+	 * and doesn't take the chroot into account )
+	 *
+	 * @param string $path
+	 * @return \OC\Files\Mount\Mount
+	 */
+	public function getMount($path) {
+		return Filesystem::getMountManager()->find($this->getAbsolutePath($path));
+	}
+
+	/**
 	 * resolve a path to a storage and internal path
 	 *
 	 * @param string $path
@@ -873,6 +886,9 @@ class View {
 		if (!Filesystem::isValidPath($path)) {
 			return $data;
 		}
+		if (Cache\Scanner::isPartialFile($path)) {
+			return $this->getPartFileInfo($path);
+		}
 		$path = Filesystem::normalizePath($this->fakeRoot . '/' . $path);
 
 		$mount = Filesystem::getMountManager()->find($path);
@@ -1258,5 +1274,33 @@ class View {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get a fileinfo object for files that are ignored in the cache (part files)
+	 *
+	 * @param string $path
+	 * @return \OCP\Files\FileInfo
+	 */
+	private function getPartFileInfo($path) {
+		$mount  = $this->getMount($path);
+		$storage = $mount->getStorage();
+		$internalPath = $mount->getInternalPath($this->getAbsolutePath($path));
+		return new FileInfo(
+			$this->getAbsolutePath($path),
+			$storage,
+			$internalPath,
+			array(
+				'fileid' => null,
+				'mimetype' => $storage->getMimeType($internalPath),
+				'name' => basename($path),
+				'etag' => null,
+				'size' => $storage->filesize($internalPath),
+				'mtime' => $storage->filemtime($internalPath),
+				'encrypted' => false,
+				'permissions' => \OCP\PERMISSION_ALL
+			),
+			$mount
+		);
 	}
 }

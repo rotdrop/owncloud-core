@@ -8,6 +8,7 @@
 namespace Test\Files;
 
 use OC\Files\Cache\Watcher;
+use OC\Files\Storage\Temporary;
 
 class TemporaryNoTouch extends \OC\Files\Storage\Temporary {
 	public function touch($path, $mtime = null) {
@@ -666,6 +667,20 @@ class View extends \PHPUnit_Framework_TestCase {
 	public function testGetAbsolutePath($expectedPath, $relativePath) {
 		$view = new \OC\Files\View('/files');
 		$this->assertEquals($expectedPath, $view->getAbsolutePath($relativePath));
+	}
+
+	public function testPartFileInfo() {
+		$storage = new Temporary(array());
+		$scanner = $storage->getScanner();
+		\OC\Files\Filesystem::mount($storage, array(), '/test/');
+		$storage->file_put_contents('test.part', 'foobar');
+		$scanner->scan('');
+		$view = new \OC\Files\View('/test');
+		$info = $view->getFileInfo('test.part');
+
+		$this->assertInstanceOf('\OCP\Files\FileInfo', $info);
+		$this->assertNull($info->getId());
+		$this->assertEquals(6, $info->getSize());
 	}
 
 	function absolutePathProvider() {
