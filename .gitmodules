@@ -1,3 +1,6 @@
 [submodule "3rdparty"]
 	path = 3rdparty
 	url = https://github.com/owncloud/3rdparty.git
+[submodule "themes/cafevdb"]
+	path = themes/cafevdb
+	url = https://claus@fritz.claus-justus-heine.info:8888/git/cafevoctheme.git
