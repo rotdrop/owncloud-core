@@ -4,3 +4,11 @@
 [submodule "themes/cafevdb"]
 	path = themes/cafevdb
 	url = https://claus@fritz.claus-justus-heine.info:8888/git/cafevoctheme.git
+[submodule "apps/dokuwikiembed"]
+	path = apps/dokuwikiembed
+	url = https://github.com/rotdrop/ocapp-dokuwikiembed.git
+	branch = owncloud8-app
+[submodule "apps/redaxo"]
+	path = apps/redaxo
+	url = https://github.com/rotdrop/ocapp-embeddedredaxo.git
+	branch = owncloud8-app
