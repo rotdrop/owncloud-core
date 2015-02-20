@@ -12,3 +12,7 @@
 	path = apps/redaxo
 	url = https://github.com/rotdrop/ocapp-embeddedredaxo.git
 	branch = owncloud8-app
+[submodule "apps-git"]
+	path = apps-git
+	url = https://github.com/owncloud/apps.git
+	branch = stable8
