@@ -79,7 +79,7 @@
 			'/avatar/{user}/{size}?requesttoken={requesttoken}',
 			{user: user, size: size * window.devicePixelRatio, requesttoken: oc_requesttoken});
 
-		$.get(url, function(result) {
+		var avatarReceiver = function(result) {
 			if (typeof(result) === 'object') {
 				if (!hidedefault) {
 					if (result.data && result.data.displayname) {
@@ -101,6 +101,10 @@
 			if(typeof callback === 'function') {
 				callback();
 			}
-		});
+		};
+		//$.get(url, avatarReceiver);
+                $.ajax({url: url,
+                        cache: false,
+                        success: avatarReceiver });
 	};
 }(jQuery));
