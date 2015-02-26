@@ -46,7 +46,7 @@ var OCdialogs = {
 			OCdialogs.OK_BUTTON,
 			callback,
 			modal,
-                        html
+			html
 		);
 	},
 	/**
@@ -56,15 +56,15 @@ var OCdialogs = {
 	* @param callback which will be triggered when user presses OK
 	* @param modal make the dialog modal
 	*/
-	info:function(text, title, callback, modal) {
-		this.message(text, title, 'info', OCdialogs.OK_BUTTON, callback, modal);
+	info:function(text, title, callback, modal, html) {
+		this.message(text, title, 'info', OCdialogs.OK_BUTTON, callback, modal, html);
 	},
 	/**
 	* displays confirmation dialog
 	* @param text content of dialog
 	* @param title dialog title
 	* @param callback which will be triggered when user presses YES or NO
-	*        (true or false would be passed to callback respectively)
+	*	 (true or false would be passed to callback respectively)
 	* @param modal make the dialog modal
 	*/
 	confirm:function(text, title, callback, modal) {
@@ -82,7 +82,7 @@ var OCdialogs = {
 	 * @param text content of dialog
 	 * @param title dialog title
 	 * @param callback which will be triggered when user presses YES or NO
-	 *        (true or false would be passed to callback respectively)
+	 *	  (true or false would be passed to callback respectively)
 	 * @param modal make the dialog modal
 	 * @param name name of the input field
 	 * @param password whether the input should be a password input
@@ -93,9 +93,9 @@ var OCdialogs = {
 			var dialogId = '#' + dialogName;
 			var $dlg = $tmpl.octemplate({
 				dialog_name: dialogName,
-				title      : title,
-				message    : text,
-				type       : 'notice'
+				title	   : title,
+				message	   : text,
+				type	   : 'notice'
 			});
 			var input = $('<input/>');
 			input.attr('type', password ? 'password' : 'text').attr('id', dialogName + '-input');
@@ -115,8 +115,8 @@ var OCdialogs = {
 						$(dialogId).ocdialog('close');
 					}
 				}, {
-					text         : t('core', 'Yes'),
-					click        : function () {
+					text	     : t('core', 'Yes'),
+					click	     : function () {
 						if (callback !== undefined) {
 							callback(true, input.val());
 						}
@@ -128,8 +128,8 @@ var OCdialogs = {
 
 			$(dialogId).ocdialog({
 				closeOnEscape: true,
-				modal        : modal,
-				buttons      : buttonlist
+				modal	     : modal,
+				buttons	     : buttonlist
 			});
 			OCdialogs.dialogsCounter++;
 		});
@@ -237,14 +237,14 @@ var OCdialogs = {
 	 * Displays raw dialog
 	 * You better use a wrapper instead ...
 	*/
-        message:function(content, title, dialogType, buttons, callback, modal, html) {
+	message:function(content, title, dialogType, buttons, callback, modal, html) {
 		return $.when(this._getMessageTemplate()).then(function($tmpl) {
 			var dialogName = 'oc-dialog-' + OCdialogs.dialogsCounter + '-content';
 			var dialogId = '#' + dialogName;
-                        if (html === undefined) {
-                                html = false;
-                        }
-                        var options = html ? { escapeFunction: null } : {};
+			if (html === undefined) {
+				html = false;
+			}
+			var options = html ? { escapeFunction: null } : {};
 			var $dlg = $tmpl.octemplate({
 				dialog_name: dialogName,
 				title: title,
@@ -256,6 +256,7 @@ var OCdialogs = {
 			}
 			$('body').append($dlg);
 			var buttonlist = [];
+			var closeCB = function() {};
 			switch (buttons) {
 			case OCdialogs.YES_NO_BUTTONS:
 				buttonlist = [{
@@ -281,8 +282,11 @@ var OCdialogs = {
 			case OCdialogs.OK_BUTTON:
 				var functionToCall = function() {
 					$(dialogId).ocdialog('close');
+				};
+				closeCB = function() {
 					if(callback !== undefined) {
 						callback();
+						callback = undefined;
 					}
 				};
 				buttonlist[0] = {
@@ -295,6 +299,7 @@ var OCdialogs = {
 
 			$(dialogId).ocdialog({
 				closeOnEscape: true,
+				close: closeCB,
 				modal: modal,
 				buttons: buttonlist
 			});
