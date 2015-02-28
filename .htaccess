@@ -51,6 +51,3 @@ Options -Indexes
 ErrorDocument 403 /owncloud8/core/templates/403.php
 ErrorDocument 404 /owncloud8/core/templates/404.php
 
-
-ErrorDocument 403 /owncloud8/core/templates/403.php
-ErrorDocument 404 /owncloud8/core/templates/404.php
