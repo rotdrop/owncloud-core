@@ -16,3 +16,7 @@
 	path = apps-git
 	url = https://github.com/owncloud/apps.git
 	branch = stable8
+[submodule "apps/tasks"]
+	path = apps/tasks
+	url = https://github.com/rotdrop/tasks.git
+	branch = rotdrop

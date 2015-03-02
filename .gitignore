@@ -9,6 +9,7 @@
 
 # ignore all apps except core ones
 /apps*/*
+!/apps/tasks
 !/apps/cafevdb
 !/apps/dokuwikiembed
 !/apps/redaxo
