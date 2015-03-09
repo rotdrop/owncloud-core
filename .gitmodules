@@ -20,3 +20,7 @@
 	path = apps/tasks
 	url = https://github.com/rotdrop/tasks.git
 	branch = rotdrop
+[submodule "apps/templateeditor"]
+	path = apps/templateeditor
+	url = https://github.com/owncloud/templateeditor.git
+	branch = stable8
