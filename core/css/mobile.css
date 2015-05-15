@@ -95,7 +95,7 @@
 	left: 0 !important;
 	background-color: #fff;
 	overflow-x: hidden !important;
-	z-index: 1000;
+	z-index: 100;
 }
 
 /* allow horizontal scrollbar in settings
