@@ -219,10 +219,13 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 		 * App Framework APIs
 		 */
 		$this->registerService('API', function($c){
+                    if (false) {
 			$c->query('OCP\\ILogger')->debug(
 				'Accessing the API class is deprecated! Use the appropriate ' .
-				'services instead!'
-			);
+				'services instead!',
+                                array('app' => $c['AppName'])
+                          );
+                    }
 			return new API($c['AppName']);
 		});
 
