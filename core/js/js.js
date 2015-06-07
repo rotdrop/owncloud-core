@@ -1056,6 +1056,7 @@ function initCore() {
 	setShowPassword($('#adminpass'), $('label[for=show]'));
 	setShowPassword($('#pass2'), $('label[for=personal-show]'));
 	setShowPassword($('#dbpass'), $('label[for=dbpassword]'));
+	setShowPassword($('#password'), $('label[for=password-show]'));
 
 	var checkShowCredentials = function() {
 		var empty = false;
