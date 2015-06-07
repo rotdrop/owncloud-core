@@ -15,6 +15,9 @@ OC.Lostpassword = {
 	init : function() {
 		$('#lost-password').click(OC.Lostpassword.sendLink);
 		$('#reset-password #submit').click(OC.Lostpassword.resetPassword);
+                if($('#password').length) {
+                	$('#password').showPassword().keyup();
+                }
 	},
 
 	sendLink : function(event){
