@@ -2,8 +2,10 @@
 /** @var array $_ */
 /** @var $l OC_L10N */
 style('lostpassword', 'resetpassword');
-script('jquery-showpassword');
-script('core', 'lostpassword');
+script('core', [
+        'jquery-showpassword',
+        'lostpassword'
+]);
 ?>
 
 <form action="<?php print_unescaped($_['link']) ?>" id="reset-password" method="post" autocomplete="off">

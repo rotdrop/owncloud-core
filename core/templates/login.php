@@ -3,6 +3,7 @@
 vendor_script('jsTimezoneDetect/jstz');
 script('core', [
 	'visitortimezone',
+        'jquery-showpassword',
 	'lostpassword'
 ]);
 ?>
@@ -83,4 +84,3 @@ script('core', [
 	</fieldset>
 </form>
 <?php }
-
