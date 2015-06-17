@@ -129,7 +129,7 @@ class OC {
 		// search the 3rdparty folder
 		OC::$THIRDPARTYROOT = OC_Config::getValue('3rdpartyroot', null);
 		OC::$THIRDPARTYWEBROOT = OC_Config::getValue('3rdpartyurl', null);
-		
+
 		if (empty(OC::$THIRDPARTYROOT) && empty(OC::$THIRDPARTYWEBROOT)) {
 			if (file_exists(OC::$SERVERROOT . '/3rdparty')) {
 				OC::$THIRDPARTYROOT = OC::$SERVERROOT;
@@ -145,7 +145,7 @@ class OC {
 				. ' You can also configure the location in the config.php file.');
 			return;
 		}
-		
+
 		// search the apps folder
 		$config_paths = OC_Config::getValue('apps_paths', array());
 		if (!empty($config_paths)) {
@@ -529,6 +529,8 @@ class OC {
 		// initialize intl fallback is necessary
 		\Patchwork\Utf8\Bootup::initIntl();
 		OC_Util::isSetLocaleWorking();
+
+                register_shutdown_function(function() { flush(); }); // ????
 
 		if (!defined('PHPUNIT_RUN')) {
 			OC\Log\ErrorHandler::setLogger(OC_Log::$object);
