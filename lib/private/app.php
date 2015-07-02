@@ -1173,6 +1173,8 @@ class OC_App {
 		$appData = self::getAppInfo($appId);
 		if (array_key_exists('ocsid', $appData)) {
 			OC_Appconfig::setValue($appId, 'ocsid', $appData['ocsid']);
+		} elseif(OC_Appconfig::getValue($appId, 'ocsid', null) !== null) {
+			OC_Appconfig::deleteKey($appId, 'ocsid');
 		}
 		foreach ($appData['remote'] as $name => $path) {
 			OCP\CONFIG::setAppValue('core', 'remote_' . $name, $appId . '/' . $path);
@@ -1227,17 +1229,18 @@ class OC_App {
 			// manages line breaks itself
 
 			// first of all we split on empty lines
-			$paragraphs = preg_split("!\n[[:space:]]*\n!m", $data['description']);
+			$paragraphs = preg_split("!\n[[:space:]]*\n!mu", $data['description']);
 
 			$result = [];
 			foreach ($paragraphs as $value) {
 				// replace multiple whitespace (tabs, space, newlines) inside a paragraph
 				// with a single space - also trims whitespace
-				$result[] = trim(preg_replace('![[:space:]]+!m', ' ', $value));
+				$result[] = trim(preg_replace('![[:space:]]+!mu', ' ', $value));
 			}
 
 			// join the single paragraphs with a empty line in between
 			$data['description'] = implode("\n\n", $result);
+
 		}
 
 		return $data;
