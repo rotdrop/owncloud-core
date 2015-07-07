@@ -24,3 +24,6 @@
 	path = apps/templateeditor
 	url = https://github.com/owncloud/templateeditor.git
 	branch = stable8
+[submodule "apps/galleryplus"]
+	path = apps/galleryplus
+	url = https://github.com/owncloud/galleryplus.git
