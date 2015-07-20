@@ -1178,7 +1178,7 @@ function initCore() {
 		});
 
 		var toggleSnapperOnSize = function() {
-			if($(window).width() > 768) {
+			if(!$appNavigation.hasClass('snapper-enabled') && $(window).width() > 768) {
 				snapper.close();
 				snapper.disable();
 			} else {
@@ -1197,13 +1197,13 @@ function initCore() {
 				var controlsWidth;
 				// if there is a scrollbar …
 				if($('#app-content').get(0).scrollHeight > $('#app-content').height()) {
-					if($(window).width() > 768) {
+			                if(!$appNavigation.hasClass('snapper-enabled') && $(window).width() > 768) {
 						controlsWidth = $('#content').width() - $('#app-navigation').width() - getScrollBarWidth();
 					} else {
 						controlsWidth = $('#content').width() - getScrollBarWidth();
 					}
 				} else { // if there is none
-					if($(window).width() > 768) {
+			                if(!$appNavigation.hasClass('snapper-enabled') && $(window).width() > 768) {
 						controlsWidth = $('#content').width() - $('#app-navigation').width();
 					} else {
 						controlsWidth = $('#content').width();
