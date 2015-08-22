@@ -69,7 +69,7 @@ class SecureSession {
       }
     }
     // return mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
-    return file_get_contents("/dev/urandom", false, NULL; $length);
+    return file_get_contents("/dev/urandom", false, NULL, $length);
   }
   /**
    * Constructor
