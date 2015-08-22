@@ -53,6 +53,7 @@
  */
 
 require_once 'public/constants.php';
+require_once __DIR__.'/SecureSession.php';
 
 /**
  * Class that is a namespace for all global OC variables
@@ -527,9 +528,10 @@ class OC {
 		//Let´s try to overwrite some defaults anyway
 
 		//try to set the maximum execution time to 60min
-		@set_time_limit(3600);
-		@ini_set('max_execution_time', 3600);
-		@ini_set('max_input_time', 3600);
+                $to = 3600
+		@set_time_limit($to);
+		@ini_set('max_execution_time', $to);
+		@ini_set('max_input_time', $to);
 
 		//try to set the maximum filesize to 10G
 		@ini_set('upload_max_filesize', '10G');
