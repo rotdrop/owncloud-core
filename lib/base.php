@@ -528,7 +528,7 @@ class OC {
 		//Let´s try to overwrite some defaults anyway
 
 		//try to set the maximum execution time to 60min
-                $to = 3600
+                $to = 3600;
 		@set_time_limit($to);
 		@ini_set('max_execution_time', $to);
 		@ini_set('max_input_time', $to);
