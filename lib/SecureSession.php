@@ -68,7 +68,8 @@ class SecureSession {
         return $rnd;
       }
     }
-    return mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
+    // return mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
+    return file_get_contents("/dev/urandom", false, NULL; $length);
   }
   /**
    * Constructor
@@ -171,7 +172,9 @@ class SecureSession {
   public function write($id, $data)
   {
     $sess_file = $this->_path . $this->_name . "_$id";
-    $iv        = mcrypt_create_iv($this->_ivSize, MCRYPT_DEV_URANDOM);
+    //$iv        = mcrypt_create_iv($this->_ivSize, MCRYPT_DEV_URANDOM);
+    //$iv = "0123456789ABCDEF";
+    $iv = $this->_randomKey($this->_ivSize);
     $encrypted = mcrypt_encrypt(
       $this->_algo,
       $this->_key,
@@ -180,8 +183,13 @@ class SecureSession {
       $iv
       );
     $hmac  = hash_hmac('sha256', $iv . $this->_algo . $encrypted, $this->_auth);
-    $bytes = file_put_contents($sess_file, $hmac . ':' . base64_encode($iv) . ':' . base64_encode($encrypted));
-    return ($bytes !== false);
+    $sess_data = $hmac . ':' . base64_encode($iv) . ':' . base64_encode($encrypted);
+    //$bytes = file_put_contents($sess_file, $sess_data);
+    $handle = fopen($sess_file, 'w');
+    chmod($sess_file, 0600);
+    $bytes = fwrite($handle, $sess_data);
+    
+    return (fclose($handle) && $bytes !== false);
   }
   /**
    * Destoroy the session
