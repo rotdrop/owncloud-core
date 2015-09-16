@@ -62,5 +62,13 @@ Options -Indexes
   ModPagespeed Off
 </IfModule>
 
+order deny,allow
+deny from all
+allow from 129.69.61
+allow from 129.69.116
+allow from 127.0.0
+allow from 192.168.254
+
+
 ErrorDocument 403 /core/templates/403.php
 ErrorDocument 404 /core/templates/404.php
