@@ -67,14 +67,15 @@ var OCdialogs = {
 	*	 (true or false would be passed to callback respectively)
 	* @param modal make the dialog modal
 	*/
-	confirm:function(text, title, callback, modal) {
+	confirm:function(text, title, callback, modal, html) {
 		return this.message(
 			text,
 			title,
 			'notice',
 			OCdialogs.YES_NO_BUTTONS,
 			callback,
-			modal
+			modal,
+			html
 		);
 	},
 	/**
