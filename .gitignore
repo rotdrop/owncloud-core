@@ -9,6 +9,7 @@
 
 # ignore all apps except core ones
 /apps*/*
+!/apps/contacts
 !/apps/files
 !/apps/files_encryption
 !/apps/encryption
