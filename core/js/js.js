@@ -1367,6 +1367,16 @@ function initCore() {
 				snapper.open('left');
 			}
 		});
+		$('#app-navigation-toggle').on('snapjs:close', function() {
+			if(snapper.state().state == 'left'){
+				snapper.close();
+			}
+		});
+		$('#app-navigation-toggle').on('snapjs:open', function() {
+			if(!snapper.state().state == 'left'){
+				snapper.open('left');
+			}
+		});
 		// close sidebar when switching navigation entry
 		var $appNavigation = $('#app-navigation');
 		$appNavigation.delegate('a, :button', 'click', function(event) {
