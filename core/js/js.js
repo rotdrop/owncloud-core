@@ -2035,3 +2035,18 @@ jQuery.fn.tipsy = function(argument) {
 	}
 	return this;
 }
+
+jQuery.fn.tipsy.enable = function() {
+	jQuery.fn.tooltip.enable();
+}
+
+jQuery.fn.tipsy.disable = function() {
+	jQuery.fn.tooltip.disable();
+}
+
+/*
+ * Local Variables: ***
+ * indent-tabs-mode: t ***
+ * js3-indent-level: 8 ***
+ * End: ***
+ */
