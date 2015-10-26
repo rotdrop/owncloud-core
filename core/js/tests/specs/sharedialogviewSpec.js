@@ -146,7 +146,8 @@ describe('OC.Share.ShareDialogView', function() {
 
 			expect(fakeServer.requests[1].method).toEqual('POST');
 			var body = OC.parseQueryString(fakeServer.requests[1].requestBody);
-			expect(body.shareWith).toEqual('foo');
+			expect(body['shareWith[password]']).toEqual('foo');
+			expect(body['shareWith[passwordChanged]']).toEqual('true');
 
 			fetchStub.reset();
 
@@ -185,7 +186,8 @@ describe('OC.Share.ShareDialogView', function() {
 
 			expect(fakeServer.requests[1].method).toEqual('POST');
 			var body = OC.parseQueryString(fakeServer.requests[1].requestBody);
-			expect(body.shareWith).toEqual('foo');
+			expect(body['shareWith[password]']).toEqual('foo');
+			expect(body['shareWith[passwordChanged]']).toEqual('true');
 
 			fetchStub.reset();
 
@@ -234,6 +236,29 @@ describe('OC.Share.ShareDialogView', function() {
 
 			expect(dialog.$el.find('.linkCheckbox').prop('checked')).toEqual(true);
 			expect(dialog.$el.find('.linkText').val()).toEqual(link);
+		});
+		it('autofocus link text when clicked', function() {
+			$('#allowShareWithLink').val('yes');
+
+			dialog.render();
+
+			// Toggle linkshare
+			dialog.$el.find('.linkCheckbox').click();
+			fakeServer.requests[0].respond(
+				200,
+				{ 'Content-Type': 'application/json' },
+				JSON.stringify({data: {token: 'xyz'}, status: 'success'})
+			);
+
+			var focusStub = sinon.stub($.fn, 'focus');
+			var selectStub = sinon.stub($.fn, 'select');
+			dialog.$el.find('.linkText').click();
+
+			expect(focusStub.calledOnce).toEqual(true);
+			expect(selectStub.calledOnce).toEqual(true);
+
+			focusStub.restore();
+			selectStub.restore();
 		});
 		describe('password', function() {
 			var slideToggleStub;
