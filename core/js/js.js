@@ -2047,11 +2047,11 @@ jQuery.fn.tipsy = function(argument) {
 }
 
 jQuery.fn.tipsy.enable = function() {
-	jQuery.fn.tooltip.enable();
+	jQuery('[data-original-title]').tooltip('enable');
 }
 
 jQuery.fn.tipsy.disable = function() {
-	jQuery.fn.tooltip.disable();
+	jQuery('[data-original-title]').tooltip('disable');
 }
 
 /*
