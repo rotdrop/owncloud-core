@@ -1643,6 +1643,15 @@ OC.Util = {
 	},
 
 	/**
+	 * Returns whether this is IE
+	 *
+	 * @return {bool} true if this is IE, false otherwise
+	 */
+	isIE: function() {
+		return $('html').hasClass('ie');
+	},
+
+	/**
 	 * Returns whether this is IE8
 	 *
 	 * @return {bool} true if this is IE8, false otherwise
@@ -1999,7 +2008,8 @@ jQuery.fn.tipsy = function(argument) {
 			placement: 'bottom',
 			delay: { 'show': 0, 'hide': 0},
 			trigger: 'hover',
-			html: false
+			html: false,
+			container: 'body'
 		};
 		if(argument.gravity) {
 			switch(argument.gravity) {
