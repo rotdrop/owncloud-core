@@ -33,6 +33,9 @@
  * @param string|array $string the string which will be escaped and printed
  */
 function p($string) {
+	if (empty($string)) {
+		return;
+	}
 	print(OC_Util::sanitizeHTML($string));
 }
 
