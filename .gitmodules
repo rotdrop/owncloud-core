@@ -4,3 +4,6 @@
 [submodule "apps/contacts"]
 	path = apps/contacts
 	url = https://github.com/owncloud/contacts.git
+[submodule "apps/files_antivirus"]
+	path = apps/files_antivirus
+	url = https://github.com/owncloud/files_antivirus.git
