@@ -1,6 +1,5 @@
 <?php
 /**
- * @author Joas Schilling <nickvergessen@owncloud.com>
  * @author Robin Appelman <icewind@owncloud.com>
  *
  * @copyright Copyright (c) 2015, ownCloud, Inc.
@@ -20,44 +19,20 @@
  *
  */
 
-namespace OCA\Files_Versions\Command;
+namespace OCP;
 
-use OC\Command\FileAccess;
-use OCA\Files_Versions\Storage;
-use OCP\Command\ICommand;
-
-class Expire implements ICommand {
-	use FileAccess;
-
+/**
+ * Interface for memcache backends that support setting ttl after the value is set
+ *
+ * @since 8.2.2
+ */
+interface IMemcacheTTL extends IMemcache {
 	/**
-	 * @var string
+	 * Set the ttl for an existing value
+	 *
+	 * @param string $key
+	 * @param int $ttl time to live in seconds
+	 * @since 8.2.2
 	 */
-	private $fileName;
-
-	/**
-	 * @var string
-	 */
-	private $user;
-
-	/**
-	 * @param string $user
-	 * @param string $fileName
-	 */
-	function __construct($user, $fileName) {
-		$this->user = $user;
-		$this->fileName = $fileName;
-	}
-
-
-	public function handle() {
-		$userManager = \OC::$server->getUserManager();
-		if (!$userManager->userExists($this->user)) {
-			// User has been deleted already
-			return;
-		}
-
-		\OC_Util::setupFS($this->user);
-		Storage::expire($this->fileName);
-		\OC_Util::tearDownFS();
-	}
+	public function setTTL($key, $ttl);
 }
