@@ -136,7 +136,10 @@
                  */
                 add: function(el, name){
                     if(!utils.klass.has(el, name) && settings.addBodyClasses){
-                        el.className += " "+name;
+                        if (el.className) {
+                            el.className += " ";
+                        }
+                        el.className += name;
                     }
                 },
 
