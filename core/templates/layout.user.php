@@ -77,25 +77,6 @@
 					<span id="expandDisplayName"><?php  p(trim($_['user_displayname']) != '' ? $_['user_displayname'] : $_['user_uid']) ?></span>
 					<img class="svg" alt="" src="<?php print_unescaped(image_path('', 'actions/caret.svg')); ?>">
 				</div>
-				<div id="expanddiv">
-				<ul>
-				<?php foreach($_['settingsnavigation'] as $entry):?>
-					<li>
-						<a href="<?php print_unescaped($entry['href']); ?>"
-							<?php if( $entry["active"] ): ?> class="active"<?php endif; ?>>
-							<img class="svg" alt="" src="<?php print_unescaped($entry['icon']); ?>">
-							<?php p($entry['name']) ?>
-						</a>
-					</li>
-				<?php endforeach; ?>
-					<li>
-						<a id="logout" <?php print_unescaped(OC_User::getLogoutAttribute()); ?>>
-							<img class="svg" alt="" src="<?php print_unescaped(image_path('', 'actions/logout.svg')); ?>">
-							<?php p($l->t('Log out'));?>
-						</a>
-					</li>
-				</ul>
-				</div>
 			</div>
 
 			<form class="searchbox" action="#" method="post" role="search">
@@ -108,6 +89,27 @@
 			</form>
 		</div></header>
 
+        <nav role="navigation">
+		<div id="expanddiv">
+			<ul>
+				<?php foreach($_['settingsnavigation'] as $entry):?>
+					<li>
+						<a href="<?php print_unescaped($entry['href']); ?>"
+							<?php if( $entry["active"] ): ?> class="active"<?php endif; ?>>
+							<img class="svg" alt="" src="<?php print_unescaped($entry['icon']); ?>">
+							<?php p($entry['name']) ?>
+						</a>
+					</li>
+				<?php endforeach; ?>
+				<li>
+					<a id="logout" <?php print_unescaped(OC_User::getLogoutAttribute()); ?>>
+						<img class="svg" alt="" src="<?php print_unescaped(image_path('', 'actions/logout.svg')); ?>">
+						<?php p($l->t('Log out'));?>
+					</a>
+				</li>
+			</ul>
+		</div>
+        </nav>
 		<nav role="navigation"><div id="navigation">
 			<div id="apps" class="svg">
 				<ul>
