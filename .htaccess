@@ -22,6 +22,7 @@
   </FilesMatch>
 </IfModule>
 <IfModule mod_php5.c>
+  php_value session.cookie_secure 1
   php_value upload_max_filesize 2G
   php_value post_max_size 2G
   php_value memory_limit 4G 
@@ -73,7 +74,7 @@ deny from all
 allow from 129.69.116.221
 allow from 127.0.0
 allow from 192.168.254
-
+allow from 94.217.229.42
 
 ErrorDocument 403 /core/templates/403.php
 ErrorDocument 404 /core/templates/404.php
