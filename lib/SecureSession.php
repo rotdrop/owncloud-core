@@ -192,7 +192,7 @@ class SecureSession {
     return (fclose($handle) && $bytes !== false);
   }
   /**
-   * Destoroy the session
+   * Destroy the session.
    *
    * @param int $id
    * @return bool
@@ -200,7 +200,6 @@ class SecureSession {
   public function destroy($id)
   {
     $sess_file = $this->_path . $this->_name . "_$id";
-    setcookie ($this->_keyName, '', time() - 3600);
     return(@unlink($sess_file));
   }
   /**
