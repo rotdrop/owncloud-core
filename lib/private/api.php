@@ -335,8 +335,8 @@ class OC_API {
 
 		// reuse existing login
 		$loggedIn = OC_User::isLoggedIn();
+		$ocsApiRequest = isset($_SERVER['HTTP_OCS_APIREQUEST']) ? $_SERVER['HTTP_OCS_APIREQUEST'] === 'true' : false;
 		if ($loggedIn === true) {
-			$ocsApiRequest = isset($_SERVER['HTTP_OCS_APIREQUEST']) ? $_SERVER['HTTP_OCS_APIREQUEST'] === 'true' : false;
 			if ($ocsApiRequest) {
 
 				// initialize the user's filesystem
@@ -355,7 +355,7 @@ class OC_API {
 			$authPw = $_SERVER['PHP_AUTH_PW'];
 			$return = OC_User::login($authUser, $authPw);
 			if ($return === true) {
-				self::$logoutRequired = true;
+				self::$logoutRequired = true; // !$ocsApiRequest; // keep logged in
 
 				// initialize the user's filesystem
 				\OC_Util::setUpFS(\OC_User::getUser());
