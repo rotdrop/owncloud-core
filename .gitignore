@@ -7,6 +7,10 @@
 /apps/inc.php
 /assets
 
+# my stuff
+/dokuwiki*
+/roundcubemail
+
 # ignore all apps except core ones
 /apps*/*
 !/apps/contacts
@@ -51,6 +55,10 @@ CVS/*
 .svn/*
 RCS/*
 *.backup*
+*.tar.*
+blah
+*#*#
+*~HEAD
 
 # kdevelop
 .kdev
