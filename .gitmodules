@@ -7,3 +7,6 @@
 [submodule "apps/files_antivirus"]
 	path = apps/files_antivirus
 	url = https://github.com/owncloud/files_antivirus.git
+[submodule "apps/mail"]
+	path = apps/mail
+	url = https://github.com/owncloud/mail.git
