@@ -25,7 +25,7 @@
   php_value session.cookie_secure 1
   php_value upload_max_filesize 2G
   php_value post_max_size 2G
-  php_value memory_limit 4G 
+  php_value memory_limit 2G 
   php_value mbstring.func_overload 0
   php_value always_populate_raw_post_data -1
   php_value default_charset 'UTF-8'
