@@ -109,7 +109,7 @@ class File extends Node implements IFile {
 
 		if ($needsPartFile) {
 			// mark file as partial while uploading (ignored by the scanner)
-			$partFilePath = $this->path . '.ocTransferId' . rand() . '.part';
+			$partFilePath = $this->getPartFileBasePath($this->path) . '.ocTransferId' . rand() . '.part';
 		} else {
 			// upload file directly as the final path
 			$partFilePath = $this->path;
@@ -130,12 +130,12 @@ class File extends Node implements IFile {
 			list($count, $result) = \OC_Helper::streamCopy($data, $target);
 			fclose($target);
 
-			if($result === false) {
+			if ($result === false) {
 				$expected = -1;
 				if (isset($_SERVER['CONTENT_LENGTH'])) {
 					$expected = $_SERVER['CONTENT_LENGTH'];
 				}
-				throw new Exception('Error while copying file to target location (copied bytes: ' . $count . ', expected filesize: '. $expected .' )');
+				throw new Exception('Error while copying file to target location (copied bytes: ' . $count . ', expected filesize: ' . $expected . ' )');
 			}
 
 			// if content length is sent by client:
@@ -189,14 +189,14 @@ class File extends Node implements IFile {
 				}
 			}
 
+			// since we skipped the view we need to scan and emit the hooks ourselves
+			$this->fileView->getUpdater()->update($this->path);
+
 			try {
 				$this->changeLock(ILockingProvider::LOCK_SHARED);
 			} catch (LockedException $e) {
 				throw new FileLocked($e->getMessage(), $e->getCode(), $e);
 			}
-
-			// since we skipped the view we need to scan and emit the hooks ourselves
-			$this->fileView->getUpdater()->update($this->path);
 
 			if ($view) {
 				$this->emitPostHooks($exists);
@@ -217,6 +217,18 @@ class File extends Node implements IFile {
 		return '"' . $this->info->getEtag() . '"';
 	}
 
+	private function getPartFileBasePath($path) {
+		$partFileInStorage = \OC::$server->getConfig()->getSystemValue('part_file_in_storage', true);
+		if ($partFileInStorage) {
+			return $path;
+		} else {
+			return md5($path); // will place it in the root of the view with a unique name
+		}
+	}
+
+	/**
+	 * @param string $path
+	 */
 	private function emitPreHooks($exists, $path = null) {
 		if (is_null($path)) {
 			$path = $this->path;
@@ -390,9 +402,8 @@ class File extends Node implements IFile {
 
 				if ($needsPartFile) {
 					// we first assembly the target file as a part file
-					$partFile = $path . '/' . $info['name'] . '.ocTransferId' . $info['transferid'] . '.part';
-
-
+					$partFile = $this->getPartFileBasePath($path . '/' . $info['name']) . '.ocTransferId' . $info['transferid'] . '.part';
+					/** @var \OC\Files\Storage\Storage $targetStorage */
 					list($partStorage, $partInternalPath) = $this->fileView->resolvePath($partFile);
 
 
@@ -427,10 +438,10 @@ class File extends Node implements IFile {
 					}
 				}
 
-				$this->changeLock(ILockingProvider::LOCK_SHARED);
-
 				// since we skipped the view we need to scan and emit the hooks ourselves
 				$this->fileView->getUpdater()->update($targetPath);
+
+				$this->changeLock(ILockingProvider::LOCK_SHARED);
 
 				$this->emitPostHooks($exists, $targetPath);
 
