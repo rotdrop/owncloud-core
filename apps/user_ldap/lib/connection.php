@@ -48,9 +48,6 @@ class Connection extends LDAPUtility {
 	private $configPrefix;
 	private $configID;
 	private $configured = false;
-
-	//whether connection should be kept on __destruct
-	private $dontDestruct = false;
 	private $hasPagedResultSupport = true;
 
 	/**
@@ -92,8 +89,7 @@ class Connection extends LDAPUtility {
 	}
 
 	public function __destruct() {
-		if(!$this->dontDestruct &&
-			$this->ldap->isResource($this->ldapConnectionRes)) {
+		if($this->ldap->isResource($this->ldapConnectionRes)) {
 			@$this->ldap->unbind($this->ldapConnectionRes);
 		};
 	}
@@ -102,11 +98,9 @@ class Connection extends LDAPUtility {
 	 * defines behaviour when the instance is cloned
 	 */
 	public function __clone() {
-		//a cloned instance inherits the connection resource. It may use it,
-		//but it may not disconnect it
-		$this->dontDestruct = true;
 		$this->configuration = new Configuration($this->configPrefix,
 												 !is_null($this->configID));
+		$this->ldapConnectionRes = null;
 	}
 
 	/**
@@ -179,6 +173,16 @@ class Connection extends LDAPUtility {
 	}
 
 	/**
+	 * resets the connection resource
+	 */
+	public function resetConnectionResource() {
+		if(!is_null($this->ldapConnectionRes)) {
+			@$this->ldap->unbind($this->ldapConnectionRes);
+			$this->ldapConnectionRes = null;
+		}
+	}
+
+	/**
 	 * @param string|null $key
 	 * @return string
 	 */
@@ -201,28 +205,9 @@ class Connection extends LDAPUtility {
 		if(is_null($this->cache) || !$this->configuration->ldapCacheTTL) {
 			return null;
 		}
-		if(!$this->isCached($key)) {
-			return null;
-
-		}
 		$key = $this->getCacheKey($key);
 
 		return json_decode(base64_decode($this->cache->get($key)), true);
-	}
-
-	/**
-	 * @param string $key
-	 * @return bool
-	 */
-	public function isCached($key) {
-		if(!$this->configured) {
-			$this->readConfiguration();
-		}
-		if(is_null($this->cache) || !$this->configuration->ldapCacheTTL) {
-			return false;
-		}
-		$key = $this->getCacheKey($key);
-		return $this->cache->hasKey($key);
 	}
 
 	/**
@@ -529,7 +514,7 @@ class Connection extends LDAPUtility {
 			}
 
 			$bindStatus = false;
-			$error = null;
+			$error = -1;
 			try {
 				if (!$this->configuration->ldapOverrideMainServer
 					&& !$this->getFromCache('overrideMainServer')
@@ -557,7 +542,7 @@ class Connection extends LDAPUtility {
 				$this->doConnect($this->configuration->ldapBackupHost,
 								 $this->configuration->ldapBackupPort);
 				$bindStatus = $this->bind();
-				if($bindStatus && $error === -1) {
+				if($bindStatus && $error === -1 && !$this->getFromCache('overrideMainServer')) {
 					//when bind to backup server succeeded and failed to main server,
 					//skip contacting him until next cache refresh
 					$this->writeToCache('overrideMainServer', true);

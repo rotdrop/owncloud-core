@@ -443,8 +443,6 @@
 			this.breadcrumb.setMaxWidth(containerWidth - actionsWidth - 10);
 
 			this.$table.find('>thead').width($('#app-content').width() - OC.Util.getScrollBarWidth());
-
-			this.updateSearch();
 		},
 
 		/**
@@ -1371,7 +1369,8 @@
 				// if the error is not related to folder we're trying to load, reload the page to handle logout etc
 				if (result.data.error === 'authentication_error' ||
 					result.data.error === 'token_expired' ||
-					result.data.error === 'application_not_enabled'
+					result.data.error === 'application_not_enabled' ||
+					(result.data.exception && result.data.exception.indexOf('StorageNotAvailableException') > 0)
 				) {
 					OC.redirect(OC.generateUrl('apps/files'));
 				}
