@@ -68,8 +68,6 @@ Options -Indexes
 
 order deny,allow
 deny from all
-allow from 129.69.61
-allow from 129.69.116
 allow from 127.0.0
 allow from 192.168.254
 
